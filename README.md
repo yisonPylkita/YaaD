@@ -3,4 +3,6 @@ YaaD
 
 Yet another anime downloader
 
-Dependencies: termcolor, youtube-dl
+Dependencies: 
+  [1] termcolor 
+  [2] youtube-dl
