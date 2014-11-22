@@ -5,6 +5,6 @@ Yet another anime downloader
 
 Dependencies:
 
--termcolor
--youtube-dl
--requests
+--termcolor
+--youtube-dl
+--requests
