@@ -1,94 +1,50 @@
-#!/usr/bin/env python2
-# -*- coding: utf-8 -*-
+#!/usr/bin/env python3
 
-# HTTP connection
-import urllib
-# page parsing (links to videos searching)
-from HTMLParser import HTMLParser
-# terminal output with some colors
+from html.parser import HTMLParser
+import requests
 from termcolor import cprint
-# run external application
 import os
 import sys
-# 
-import re
 
-tsc = []
-
+# Root page parser class
 class MyHTMLParser(HTMLParser):
     links = []
     def handle_starttag(self, tag, attrs):
-        for attr in attrs:
-            tsc.append(attr[1])
+        if tag == 'a':
+            for attr in attrs:
+                if 'href' in attr[0]:
+                    self.links.append(attr[1])
 
+# Children's pages parser class
 class MyHTMLParserNext(HTMLParser):
     links = []
     def handle_starttag(self, tag, attrs):
-        if tag == "embed":
+        if tag == "iframe":
             for x in attrs:
-                tsc.append(x[1])
-url_link = sys.argv[1]
-connection = urllib.urlopen(url_link)
-page = connection.read()
-connection.close()
-parser = MyHTMLParser()
-parser.feed(page)
-d = []
-for x in tsc:
-   if type(x) == str:
-       d.append(x)
-raw = []
-p = re.compile(r"^http://www.anime-shinden.info/.([0-9]|(-))+([a-z]|([0-9])|(-))+[0-9]+.html")
-for x in d:
-    match = p.match(x)
-    if match:
-        raw.append(x)
-    else:
-        continue
-links = []
-for x in raw:
-    match = re.search(sys.argv[2], x)
-    if match:
-        links.append(x)
-    else:
-        continue
-for x in links:
-    cprint(x, "blue")
-raw = []
-tsc = []
-pages = []
+                if type(x[1]) == str and not x[1].find('http://vk') == -1:
+                    self.links.append(x[1])
 
-# Now is the time to load root childs
-for x in links:
-    tsc = []
-    connection = urllib.urlopen(x)
-    page = connection.read()
-    connection.close()
-    parser = MyHTMLParser()
-    parser.feed(page)
-    for x in tsc:
-        match = re.search("http://www.anime-shinden.info/external-player", x)
-        if match:
-            raw.append(x)
-            cprint(x, "red")
-            break
-        else:
-            continue
-    connection = urllib.urlopen(raw[0])
-    page = connection.read()
-    connection.close()
-    tsc = []
+url = sys.argv[1]
+header = {'User-Agent' : 'Mozilla/5.0 (X11; Linux i686; rv:33.0) Gecko/20100101 Firefox/33.0'}
+
+# get root page
+req = requests.get(url, headers=header)
+# parse root page
+parser = MyHTMLParser()
+parser.feed(req.text)
+episodes = []
+# search for a links to episodes
+for x in parser.links:
+    if not x.find('http://anime-odcinki.pl/viewpage.php?page_id=') or not x.find('/infusions/video/video.php?id=') or not x.find('/viewpage.php?page_id='):
+        episodes.append(x)
+        cprint(x, 'green')
+episodes.reverse()
+for x in episodes:
+    if 'http://anime-odcinki.pl/viewpage.php?page_id=' in x:
+        req = requests.get(x, headers=header)
+    else:
+        req = requests.get('http://www.anime-odcinki.pl' + x, headers=header)
     parser = MyHTMLParserNext()
-    parser.feed(page)
-    raw = []
-    for x in tsc:
-        match = x.find("http://anime-shinden.info/player/hd")
-        if match != -1:
-            match_end = x[match:].find("&")
-            raw.append(x[match:match+match_end])
-            cprint(x[match:match+match_end], "green")
-        else:
-            continue
-        for x in raw:
-            os.system("youtube-dl %s" % x)
-        raw = []
+    parser.feed(req.text)
+    cprint(parser.links[0], 'blue')
+    os.system('youtube-dl \"%s\"' % parser.links[0])
