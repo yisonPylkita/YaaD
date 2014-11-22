@@ -3,7 +3,8 @@ YaaD
 
 Yet another anime downloader
 
-Dependencies: 
+Dependencies:
+
 -termcolor
 -youtube-dl
 -requests
