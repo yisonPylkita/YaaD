@@ -1,12 +1,9 @@
-YaaD
-====
+=YaaD
 
-Yet another anime downloader
+===Yet another anime downloader
 
 Dependencies:
 
---termcolor
-
---youtube-dl
-
---requests
+*termcolor
+*youtube-dl
+*requests
