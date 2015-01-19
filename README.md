@@ -1,8 +1,8 @@
-=YaaD
+#YaaD
 
-===Yet another anime downloader
+###Yet another anime downloader
 
-Dependencies:
+####Dependencies:
 
 *termcolor
 *youtube-dl
