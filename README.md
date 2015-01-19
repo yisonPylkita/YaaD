@@ -4,6 +4,6 @@
 
 ####Dependencies:
 
-*termcolor
-*youtube-dl
-*requests
+- termcolor
+- youtube-dl
+- requests
