@@ -58,8 +58,8 @@ fn main() {
         return;
     }
 
-    let anime_to_download = &args[1];
-    println!("Aye, aye, Capt'n. Lets look for this anime - {}", anime_to_download);
+    let anime_to_download = &args[1].to_lowercase();;
+    println!("Aye, aye, Capt'n. Lets look for this anime - {}\n", anime_to_download);
 
     // Get all available anime series
 
@@ -85,7 +85,7 @@ fn main() {
     let document = Document::from(html.as_ref());
     for node in document.find(Attr("itemprop", "url")) {
         let series_name = node.text();
-        match series_name.find(anime_to_download) {
+        match series_name.to_lowercase().find(anime_to_download) {
             Some(_) => {
                 matching_series.push(MatchingAnimeLink {
                     name: series_name,
@@ -97,7 +97,6 @@ fn main() {
     }
 
     println!("Matching anime:");
-
     // Look for all anime series that might be what user wanted
     for matching_anime in matching_series {
         println!("Anime: {} | URL: {:?}", matching_anime.name, matching_anime.url);
