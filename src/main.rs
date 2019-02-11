@@ -15,15 +15,13 @@
 // you will be also seeding to others and it might raise some concerns for users (because of the law)
 
 extern crate curl;
-
-use std::io::{stdout, Write};
 use curl::easy::Easy;
 
 use std::env;
 
 extern crate select;
 use select::document::Document;
-use select::predicate::{Attr, Class, Name, Predicate};
+use select::predicate::{Attr};
 
 
 // struct AnimeSite
@@ -52,16 +50,8 @@ use select::predicate::{Attr, Class, Name, Predicate};
 // }
 
 fn main() {
-
-    // https://animeheaven.co/sitemap.html
-
-
     let supported_sites = vec!["http://ww2.chia-anime.tv/index/"];
-    println!("List of supported sites");
-    for supported_site in supported_sites.iter() {
-        println!("{}", supported_site);
-    }
-
+ 
     let args: Vec<String> = env::args().collect();
     if args.len() != 2 {
         println!("Expected name of anime to download");
@@ -69,7 +59,7 @@ fn main() {
     }
 
     let anime_to_download = &args[1];
-    println!("Aye capt'n, lets look for this anime - {}", anime_to_download);
+    println!("Aye, aye, Capt'n. Lets look for this anime - {}", anime_to_download);
 
     // Get all available anime series
 
@@ -93,11 +83,10 @@ fn main() {
     let mut matching_series: Vec<MatchingAnimeLink> = Vec::default();
 
     let document = Document::from(html.as_ref());
-    println!("# Anime links");
     for node in document.find(Attr("itemprop", "url")) {
         let series_name = node.text();
         match series_name.find(anime_to_download) {
-            Some(x) => {
+            Some(_) => {
                 matching_series.push(MatchingAnimeLink {
                     name: series_name,
                     url: node.attr("href").unwrap().to_string(),
@@ -107,7 +96,7 @@ fn main() {
         }
     }
 
-    println!("-------------");
+    println!("Matching anime:");
 
     // Look for all anime series that might be what user wanted
     for matching_anime in matching_series {
