@@ -137,8 +137,6 @@ fn main() {
         transfer.perform().unwrap();
     }
 
-    // TODO: get list of episodes
-
     let mut episode_list: Vec<String> = Vec::new();
     let document2 = Document::from(html_2.as_ref());
     for node in document2.find(Attr("itemprop", "episodeNumber").descendant(Name("a"))) {
@@ -146,12 +144,11 @@ fn main() {
     }
     episode_list.reverse();
 
-    // TODO: download all episodes
-    // TODO: add 
     for (i, episode) in episode_list.iter().enumerate() {
         println!("Episode: {}: {}", i + 1, episode);
     }
 
+    // TODO: download all episodes
     for episode in episode_list.iter() {
         easy.url(&*episode).unwrap();
         let mut episode_html: String = String::new();
@@ -172,5 +169,7 @@ fn main() {
             println!("Episode {}, URL: {}", episode, episode_download_url);
         }
         std::thread::sleep(std::time::Duration::from_millis(1000));
+
+        // <a rel="nofollow" target="_blank" download="Dungeon-ni-Deai-wo-Motomeru-no-wa-Machigatteiru-Darou-ka-Gaiden-Sword-Oratoria-Episode-1.mp4" href="http://cache1.animepremium.tv:8880/downloadcache/VypMoLHL5o8O5Ws5LcNXPw/1550942351/0irjrs0fir77.html.mp4/Dungeon-ni-Deai-wo-Motomeru-no-wa-Machigatteiru-Darou-ka-Gaiden-Sword-Oratoria-Episode-1-chia-anime.tv.mp4"><img src="http://i.imgur.com/Ehos0CN.png" border="0"></a>
     }
 }
