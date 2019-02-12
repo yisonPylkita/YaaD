@@ -69,12 +69,12 @@ fn main() {
         easy.http_headers(list).unwrap();
         easy.perform().unwrap();
     }
-    let mut html: String = String::new();
+    let mut anime_list_html: String = String::new();
     {
         let mut transfer = easy.transfer();
         transfer
             .write_function(|data| {
-                html += &String::from_utf8(Vec::from(data)).unwrap();
+                anime_list_html += &String::from_utf8(Vec::from(data)).unwrap();
                 Ok(data.len())
             })
             .unwrap();
@@ -88,7 +88,7 @@ fn main() {
 
     let mut matching_series: Vec<MatchingAnimeLink> = Vec::default();
 
-    let document = Document::from(html.as_ref());
+    let document = Document::from(anime_list_html.as_ref());
     for node in document.find(Attr("itemprop", "url")) {
         let series_name = node.text();
         match series_name.to_lowercase().find(anime_to_download) {
@@ -117,7 +117,10 @@ fn main() {
         .trim()
         .parse::<usize>()
         .expect("Could not parse anime index as number");
-    let selected_anime = &matching_series[anime_index + 1];
+    if anime_index < 1 || anime_index > matching_series.len() {
+        panic!("Invalid anime number");
+    }
+    let selected_anime = &matching_series[anime_index - 1];
 
     // Get list of episodes
     println!("Lets look for episodes of {} | {}", selected_anime.name, selected_anime.url);
